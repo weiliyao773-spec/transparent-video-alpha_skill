@@ -200,6 +200,49 @@ transparent-video-alpha/
 `SKILL.md` 是 AI 工作流使用的核心文件，`README.md` 用于 GitHub 项目说明。
 `scripts/convert_alpha_video.py` 是实际执行 FFmpeg 检测、下载、转换和验证的脚本。
 
+## 配套 Unity 材质包
+
+仓库提供了一个与本 Skill 配套的 Unity 材质包：
+
+[下载 transparent-video-materials.unitypackage](./unity/transparent-video-materials.unitypackage)
+
+该资源包用于在 Unity 中还原双层 Alpha MP4 的透明效果。包内资源以实际导入内容为准，建议先备份当前 Unity 项目，再导入材质包。
+
+### 导入 Unity 材质包
+
+1. 在 GitHub 中打开 `unity/transparent-video-materials.unitypackage`，点击 **Download raw** 下载文件。
+2. 打开 Unity 项目，在顶部菜单选择 **Assets → Import Package → Custom Package...**。
+3. 选择下载的 `.unitypackage` 文件，勾选需要导入的资源并点击 **Import**。
+4. 将导入后的透明视频材质拖到显示视频的 Raw Image 的 **Material** 属性中。
+5. Raw Image 的 Texture 仍然使用 Video Player 输出的完整 Render Texture。
+
+### Shader Graph 配置逻辑
+
+如果需要手动检查或重新制作 Shader Graph，可按照以下流程操作：
+
+1. 在 Project 窗口右键，选择 **Create → Shader Graph → URP → Unlit Shader Graph**。
+2. 将 **Surface** 设置为 `Transparent`，将 **Blend** 设置为 `Alpha`。
+3. 添加两个 **Sample Texture 2D** 节点，并让它们读取同一个视频 Render Texture。
+4. 第一个采样节点读取上半部分彩色画面，将 RGB 连接到 **Base Color**。
+5. 第二个采样节点读取下半部 Alpha 遮罩，将 R 通道连接到 **Alpha**。
+6. 保存 Shader Graph，创建材质，并将材质拖到 Raw Image 的 **Material** 属性。
+
+默认 UV 关系为：
+
+```text
+颜色画面：X = UV.x，Y = UV.y × 0.5 + 0.5
+Alpha 遮罩：X = UV.x，Y = UV.y × 0.5
+```
+
+如果出现画面上下颠倒、透明区域反转或底部异常，需要对调两个 Y 坐标公式。不同视频播放器、Unity 版本和目标平台可能存在纹理上下方向差异。
+
+### 使用提醒
+
+- Render Texture 使用双层 MP4 的完整尺寸，例如 `1500×528`。
+- Raw Image 显示比例按照原始彩色视频尺寸设置，例如 `1500:264`。
+- 普通播放器中看到灰色或黑白下半部分属于正常现象。
+- 透明材质必须设置为 Transparent，不能使用 Opaque 材质。
+
 ## 注意事项
 
 - 输出 MP4 不是原生透明视频，必须配合 Unity Shader 使用。
