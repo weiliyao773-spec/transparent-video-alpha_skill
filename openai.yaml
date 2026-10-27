@@ -1,4 +1,0 @@
-interface:
-  display_name: Transparent Video Alpha
-  short_description: Convert Alpha MOV files into Unity/PICO packed Alpha MP4 videos
-  default_prompt: Convert this Alpha-channel MOV into a Unity/PICO packed Alpha MP4 and report the output dimensions, audio status, and Unity Shader settings.
