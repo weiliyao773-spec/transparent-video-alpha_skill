@@ -1,0 +1,9 @@
+*.mov
+*.mp4
+*.mkv
+*.zip
+*.tar.xz
+ffmpeg/
+.cache/
+__pycache__/
+.DS_Store
